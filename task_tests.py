@@ -1,44 +1,52 @@
 import unittest
+import sys
+import os
+from task import cmd_ls, cmd_cd, cmd_cal, cmd_uptime
 
 class TestEmulatorCommands(unittest.TestCase):
 
     def setUp(self):
-        # Инициализация перед каждым тестом
+        global vfs_structure
+        vfs_structure = {
+            '/': None,
+            '/bin': None,
+            '/usr': None,
+            '/usr/bin': None,
+            '/usr/lib': None,
+            '/home': None,
+            '/home/user': None,
+        }
         self.current_dir = '/'
 
     def test_ls_root(self):
-        # Тест команды ls в корневой директории
-        expected_output = ['bin', 'usr', 'home']
-        output = cmd_ls(self.current_dir)
+        expected_output = ['bin', 'home', 'usr']
+        output = cmd_ls(self.current_dir, vfs_structure)
         self.assertEqual(output, expected_output)
 
     def test_ls_subdirectory(self):
-        # Тест команды ls в поддиректории
         self.current_dir = '/usr'
         expected_output = ['bin', 'lib']
-        output = cmd_ls(self.current_dir)
+        output = cmd_ls(self.current_dir, vfs_structure)
         self.assertEqual(output, expected_output)
 
     def test_cd_valid(self):
-        # Тест команды cd с существующей директорией
-        new_dir = cmd_cd('usr', self.current_dir)
+        new_dir = cmd_cd('usr', self.current_dir, vfs_structure)
         self.assertEqual(new_dir, '/usr')
 
     def test_cd_invalid(self):
-        # Тест команды cd с несуществующей директорией
-        new_dir = cmd_cd('invalid', self.current_dir)
+        new_dir = cmd_cd('invalid', self.current_dir, vfs_structure)
         self.assertEqual(new_dir, self.current_dir)
 
     def test_uptime(self):
-        # Тест команды uptime
-        # Здесь можно проверить формат вывода или просто выполнение без ошибок
-        cmd_uptime()
+        result = cmd_uptime()
+        self.assertIsNotNone(result)
 
     def test_cal(self):
-        # Тест команды cal
-        # Проверяем, что выводится не пустой календарь
         cal_output = cmd_cal()
         self.assertIsNotNone(cal_output)
+        now = datetime.now()
+        expected_header = f"{calendar.month_name[now.month]} {now.year}"
+        self.assertIn(expected_header, cal_output)
 
 if __name__ == '__main__':
     unittest.main()
