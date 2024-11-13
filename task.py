@@ -163,7 +163,7 @@ def execute_startup_script(vfs_structure, log_path, startup_script):
     except Exception as e:
         logging.error(f"Ошибка при выполнении стартового скрипта: {e}")
 
-def process_command(command, current_dir):
+def main():
     config = configparser.ConfigParser()
     config.read('config.ini')
 
