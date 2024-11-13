@@ -1,5 +1,8 @@
 import configparser
 import tarfile
+import time
+import calendar
+from datetime import datetime
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -14,3 +17,33 @@ vfs_structure = {}
 
 for member in vfs_archive.getmembers():
     vfs_structure[member.name] = member
+    
+def cmd_ls(current_dir):
+    contents = [name for name in vfs_structure.keys() if name.startswith(current_dir) and name != current_dir]
+    for item in contents:
+        print(item.replace(current_dir, '').split('/')[0])
+
+def cmd_cd(path, current_dir):
+    new_path = os.path.normpath(os.path.join(current_dir, path))
+    if new_path in vfs_structure or any(k.startswith(new_path + '/') for k in vfs_structure):
+        return new_path
+    else:
+        print("Нет такого файла или директории")
+        return current_dir
+
+def cmd_exit():
+    print("Выход из эмулятора.")
+    exit()
+
+start_time = time.time()
+
+def cmd_uptime():
+    uptime = time.time() - start_time
+    hours, rem = divmod(uptime, 3600)
+    minutes, seconds = divmod(rem, 60)
+    print(f"Время работы: {int(hours)} часов, {int(minutes)} минут, {int(seconds)} секунд")
+
+def cmd_cal():
+    now = datetime.now()
+    cal = calendar.month(now.year, now.month)
+    print(cal)
