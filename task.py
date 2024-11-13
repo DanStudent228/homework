@@ -3,6 +3,7 @@ import tarfile
 import time
 import calendar
 from datetime import datetime
+import xml.etree.ElementTree as ET
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -47,3 +48,13 @@ def cmd_cal():
     now = datetime.now()
     cal = calendar.month(now.year, now.month)
     print(cal)
+
+log_root = ET.Element('Session')
+
+def log_action(command):
+    action = ET.SubElement(log_root, 'Action')
+    action.text = command
+
+def save_log():
+    tree = ET.ElementTree(log_root)
+    tree.write(log_path)
