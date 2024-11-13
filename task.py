@@ -58,3 +58,38 @@ def log_action(command):
 def save_log():
     tree = ET.ElementTree(log_root)
     tree.write(log_path)
+    
+def execute_startup_script():
+    with open(startup_script, 'r') as script:
+        for line in script:
+            process_command(line.strip())
+
+def process_command(command, current_dir):
+    log_action(command)
+    parts = command.split()
+    cmd = parts[0]
+    args = parts[1:] if len(parts) > 1 else []
+
+    if cmd == 'ls':
+        cmd_ls(current_dir)
+    elif cmd == 'cd':
+        if args:
+            return cmd_cd(args[0], current_dir)
+        else:
+            print("Не указана директория")
+    elif cmd == 'exit':
+        cmd_exit()
+    elif cmd == 'uptime':
+        cmd_uptime()
+    elif cmd == 'cal':
+        cmd_cal()
+    else:
+        print("Команда не найдена")
+    return current_dir
+
+def main():
+    current_dir = '/'
+    execute_startup_script()
+    while True:
+        command = input(f'{current_dir}> ')
+        current_dir = process_command(command, current_dir)
