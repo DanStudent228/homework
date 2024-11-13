@@ -21,10 +21,14 @@ for member in vfs_archive.getmembers():
     
 def cmd_ls(current_dir):
     contents = [name for name in vfs_structure.keys() if name.startswith(current_dir) and name != current_dir]
+    items = set()
     for item in contents:
-        print(item.replace(current_dir, '').split('/')[0])
+        relative_path = item.replace(current_dir, '').strip('/')
+        top_level = relative_path.split('/')[0]
+        items.add(top_level)
+    return sorted(items)
 
-def cmd_cd(path, current_dir):
+def cmd_cd(path, current_dir, vfs_structure):
     new_path = os.path.normpath(os.path.join(current_dir, path))
     if new_path in vfs_structure or any(k.startswith(new_path + '/') for k in vfs_structure):
         return new_path
@@ -47,7 +51,7 @@ def cmd_uptime():
 def cmd_cal():
     now = datetime.now()
     cal = calendar.month(now.year, now.month)
-    print(cal)
+    return cal
 
 log_root = ET.Element('Session')
 
